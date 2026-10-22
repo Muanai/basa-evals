@@ -16,8 +16,8 @@ systems:
   - {system_id: raw-identity,  adapter: raw}
   - {system_id: simple-regex,  adapter: simple_regex}
   - {system_id: sastrawi,      adapter: sastrawi}
-  - {system_id: basa-default,  adapter: basa, params: {lowercase: true, apply_slang: true, apply_repeat: true, apply_typo: false}}
-  - {system_id: basa-full,     adapter: basa, params: {lowercase: true, apply_slang: true, apply_repeat: true, apply_typo: true}}
+  - {system_id: basa-default,  adapter: basa, params: {lowercase: true, apply_slang: true, apply_typo: false}}
+  - {system_id: basa-full,     adapter: basa, params: {lowercase: true, apply_slang: true, apply_typo: true}}
 
 gate:
   oner_max_rate: 0.005

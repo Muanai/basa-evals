@@ -1,7 +1,7 @@
 """Exporters for JSON artifacts and findings logs."""
 
-import json
 from pathlib import Path
+
 from basa_evals.core.schema import EvaluationReport, Sample, SliceConfig
 
 
@@ -41,9 +41,6 @@ def append_findings_log(
         "|---|---|---|---|---|---|---|",
     ]
 
-    sample_lookup = {
-        s.id: (s_cfg.slice_name, s) for s_cfg, samples in slices_data for s in samples
-    }
 
     # Inspect results for target systems (especially basa-default, or all non-raw systems)
     for res in report.results:

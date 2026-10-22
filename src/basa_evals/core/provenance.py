@@ -1,8 +1,8 @@
 """Provenance utilities for dataset hashing and Git revision tracking."""
 
 import hashlib
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 
 def compute_file_sha256(path: Path) -> str:

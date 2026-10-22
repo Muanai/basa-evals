@@ -1,7 +1,9 @@
 """Linguistic metrics: Exact Match, Character Error Rate, and Word Error Rate."""
 
-from typing import Any, Sequence
 import unicodedata
+from collections.abc import Sequence
+from typing import Any
+
 from basa_evals.core.tokenizer import tokenize
 
 

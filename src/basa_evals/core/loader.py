@@ -4,7 +4,9 @@ import importlib.resources
 import json
 from pathlib import Path
 from typing import Any
-import yaml
+
+import yaml  # type: ignore[import-untyped]
+
 from basa_evals.core.schema import RunConfig, Sample, SliceConfig
 
 
@@ -75,7 +77,7 @@ def load_suite(
 ) -> tuple[RunConfig, list[tuple[SliceConfig, list[Sample]]]]:
     """Load and validate a suite YAML and all its constituent dataset slices."""
     path = resolve_suite_path(suite_path)
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         raw_cfg: dict[str, Any] = yaml.safe_load(f)
 
     run_config = RunConfig.model_validate(raw_cfg)
@@ -84,8 +86,8 @@ def load_suite(
     for slice_cfg in run_config.slices:
         slice_file = resolve_slice(slice_cfg.path)
         samples: list[Sample] = []
-        with open(slice_file, "r", encoding="utf-8") as f:
-            for line_idx, line in enumerate(f, 1):
+        with open(slice_file, encoding="utf-8") as f:
+            for line in f:
                 line = line.strip()
                 if not line:
                     continue

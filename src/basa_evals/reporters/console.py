@@ -2,7 +2,8 @@
 
 from rich.console import Console
 from rich.table import Table
-from basa_evals.core.schema import EvaluationReport, SystemResult
+
+from basa_evals.core.schema import EvaluationReport
 
 
 def format_metric(val: float | None, as_pct: bool = True) -> str:

@@ -1,6 +1,7 @@
 """Corpus-level ratio-of-sums aggregation and alignment evaluation."""
 
 import unicodedata
+
 from basa_evals.core.alignment import align_reference, project_hypothesis
 from basa_evals.core.schema import MetricValue, Prediction, Sample
 from basa_evals.core.tokenizer import tokenize

@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+
 from basa_evals.core.schema import Sample
 
 
@@ -26,8 +27,8 @@ def test_pilot_210_integrity():
         assert pkg_copy.exists(), f"Missing packaged copy: {pkg_copy}"
         assert p.read_bytes() == pkg_copy.read_bytes(), f"Drift detected between {p} and {pkg_copy}"
 
-        with open(p, "r", encoding="utf-8") as f:
-            lines = [l.strip() for l in f if l.strip()]
+        with open(p, encoding="utf-8") as f:
+            lines = [line.strip() for line in f if line.strip()]
             assert len(lines) == 30, f"{p.name} must have 30 lines, found {len(lines)}"
             for line in lines:
                 s = Sample.model_validate(json.loads(line))

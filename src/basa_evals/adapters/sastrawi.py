@@ -14,7 +14,9 @@ class SastrawiAdapter:
     def __init__(self, system_id: str = "sastrawi", **kwargs: Any) -> None:
         self._system_id = system_id
         try:
-            from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+            from Sastrawi.Stemmer.StemmerFactory import (  # type: ignore[import-untyped]
+                StemmerFactory,
+            )
 
             self._stemmer = StemmerFactory().create_stemmer()
         except ImportError as e:
@@ -35,7 +37,7 @@ class SastrawiAdapter:
             return None
 
     def process(self, text: str) -> str:
-        return self._stemmer.stem(text)
+        return str(self._stemmer.stem(text))
 
     def process_batch(self, texts: list[str]) -> list[str]:
         return [self.process(t) for t in texts]

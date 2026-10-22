@@ -1,6 +1,7 @@
 """Tests for Typer CLI commands, subcommands, and exit codes."""
 
 from typer.testing import CliRunner
+
 from basa_evals.cli import app
 
 runner = CliRunner()

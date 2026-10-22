@@ -1,10 +1,8 @@
 import pytest
 from pydantic import ValidationError
+
 from basa_evals.core.schema import (
-    GateCheck,
     GateCriteria,
-    GateResult,
-    MetricValue,
     RunConfig,
     Sample,
     SampleMetadata,
@@ -12,6 +10,7 @@ from basa_evals.core.schema import (
     SliceGate,
     SystemRunConfig,
 )
+
 
 def test_sample_negative_control_invariant():
     # Valid negative control

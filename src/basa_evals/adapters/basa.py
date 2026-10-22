@@ -17,7 +17,7 @@ class BasaAdapter:
         self._params = dict(params or {})
 
         try:
-            import basa
+            import basa  # type: ignore[import-untyped]
 
             self._basa = basa
         except ImportError as e:
@@ -51,8 +51,8 @@ class BasaAdapter:
     def process(self, text: str) -> str:
         res = self._basa.normalize(text, **self._params)
         if isinstance(res, list):
-            return res[0] if res else ""
-        return res
+            return str(res[0]) if res else ""
+        return str(res)
 
     def process_batch(self, texts: list[str]) -> list[str]:
         res = self._basa.normalize(texts, **self._params)

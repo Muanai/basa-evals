@@ -1,8 +1,10 @@
 """Registry for resolving System Under Test adapters."""
 
-from typing import Any, Callable
-from basa_evals.adapters.base import BasePreprocessor
+from collections.abc import Callable
+from typing import Any
+
 from basa_evals.adapters.basa import BasaAdapter
+from basa_evals.adapters.base import BasePreprocessor
 from basa_evals.adapters.identity import RawAdapter
 from basa_evals.adapters.sastrawi import SastrawiAdapter
 from basa_evals.adapters.simple_regex import SimpleRegexBaseline

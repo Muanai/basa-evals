@@ -6,6 +6,7 @@ from typing import Literal
 
 from basa_evals.core.tokenizer import Token, canonicalize, is_oner_eligible
 
+
 class SpanKind(Enum):
     CLEAN = "clean"
     NOISY = "noisy"
@@ -176,7 +177,7 @@ def project_hypothesis(
             clean_ins = 0
 
             # Count matches, subs, and deletions
-            for op, g_idx, p_idx in span_ops:
+            for op, _g_idx, p_idx in span_ops:
                 if op == "M":
                     clean_preserved += 1
                 elif op in ("S", "D"):

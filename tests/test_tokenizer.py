@@ -5,6 +5,7 @@ from basa_evals.core.tokenizer import (
     tokenize,
 )
 
+
 def test_tokenizer_atom_precedence():
     cases = [
         ("https://gojek.com/karir.", "https://gojek.com/karir", TokenKind.URL),

@@ -1,8 +1,8 @@
 """Tests for provenance tracking, slice resolution, and suite loading."""
 
 from pathlib import Path
-import pytest
-from basa_evals.core.loader import resolve_slice, load_suite
+
+from basa_evals.core.loader import load_suite, resolve_slice
 from basa_evals.core.provenance import compute_file_sha256, get_git_commit
 
 

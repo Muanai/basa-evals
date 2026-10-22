@@ -1,10 +1,10 @@
 """Evaluation runner coordinating systems, dataset slices, metrics, and gates."""
 
-from datetime import datetime, timezone
-from pathlib import Path
 import platform
-from typing import Any
 import uuid
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any, Literal
 
 from basa_evals.core.gate import evaluate_suite_gate
 from basa_evals.core.loader import load_suite, resolve_slice
@@ -44,7 +44,7 @@ class EvaluationRunner:
                 import json
 
                 samples: list[Sample] = []
-                with open(slice_path, "r", encoding="utf-8") as f:
+                with open(slice_path, encoding="utf-8") as f:
                     for line in f:
                         line = line.strip()
                         if line:
@@ -133,7 +133,7 @@ class EvaluationRunner:
                         system_id=sys_cfg.system_id,
                         predicted_text=pred,
                     )
-                    for s, pred in zip(samples, output_texts)
+                    for s, pred in zip(samples, output_texts, strict=True)
                 ]
 
                 metrics = compute_corpus_metrics(samples, predictions)
@@ -167,14 +167,14 @@ class EvaluationRunner:
             target_metrics,
         )
 
-        gate_mode = "enforced"
+        gate_mode: Literal["enforced", "advisory"] = "enforced"
         if no_gate:
             gate_mode = "advisory"
             gate_result.passed = True
 
         return EvaluationReport(
             run_id=str(uuid.uuid4()),
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             run_name=self.run_config.name,
             evals_version="0.1.0a0",
             python_version=platform.python_version(),

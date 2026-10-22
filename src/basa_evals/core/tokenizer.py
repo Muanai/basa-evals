@@ -1,9 +1,10 @@
 """9-atom tokenizer with totality guarantees and comparison canonicalization."""
 
-from dataclasses import dataclass
-from enum import Enum
 import re
 import unicodedata
+from dataclasses import dataclass
+from enum import Enum
+
 
 class TokenKind(Enum):
     URL = "url"

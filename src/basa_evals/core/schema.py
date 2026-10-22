@@ -1,6 +1,7 @@
 """Core Pydantic data contracts, validation rules, and schema definitions."""
 
 from typing import Any, Literal
+
 from pydantic import BaseModel, Field, model_validator
 
 NormalizationOp = Literal[

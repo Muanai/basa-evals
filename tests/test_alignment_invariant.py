@@ -1,7 +1,11 @@
 from datetime import timedelta
-from hypothesis import given, settings, strategies as st
+
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
 from basa_evals.core.alignment import align_reference, project_hypothesis
 from basa_evals.core.tokenizer import is_oner_eligible, tokenize
+
 
 def test_closed_form_insertion_counters():
     raw = tokenize("Aplikasi Kafka berjalan")

@@ -1,8 +1,8 @@
 """Simple regex and dictionary ablation baseline adapter."""
 
 import json
-from pathlib import Path
 import re
+from pathlib import Path
 
 
 class SimpleRegexBaseline:
@@ -19,11 +19,12 @@ class SimpleRegexBaseline:
             dict_path = (
                 Path(__file__).parent.parent / "data" / "baselines" / "simple_regex_dict_v1.json"
             )
-        with open(dict_path, "r", encoding="utf-8") as f:
+        with open(dict_path, encoding="utf-8") as f:
             data = json.load(f)
         self.mappings: dict[str, str] = data.get("mappings", {})
 
         # Precompile word boundary regex for fast dictionary replacement
+        self._pattern: re.Pattern[str] | None
         if self.mappings:
             escaped = [re.escape(k) for k in self.mappings.keys()]
             self._pattern = re.compile(r"\b(" + "|".join(escaped) + r")\b")

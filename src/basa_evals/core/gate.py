@@ -1,6 +1,7 @@
 """Scale-aware gatekeeper evaluating ONER, UNER, and entity preservation."""
 
 import math
+
 from basa_evals.core.schema import GateCheck, GateCriteria, GateResult, MetricValue, SliceConfig
 
 
