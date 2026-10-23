@@ -248,3 +248,80 @@ class EvaluationReport(BaseModel):
     results: list[SystemResult]
     gate: GateResult
     gate_mode: Literal["enforced", "advisory"] = "enforced"
+
+
+class RunProvenance(BaseModel):
+    """Runtime and environmental provenance details."""
+
+    git_commit: str | None = None
+    basa_evals_version: str = "0.1.0a0"
+    python_version: str
+    platform_system: str
+    platform_machine: str
+
+
+class SampleTokenizerResult(BaseModel):
+    """Tokenizer statistics for a single sample under a specific preprocessor and tokenizer."""
+
+    sample_id: str
+    slice_name: str
+    tokenizer_id: str
+    raw_tokens: int
+    pred_tokens: int
+    gold_tokens: int
+    raw_sfi: float
+    pred_sfi: float
+    compression_ratio: float = Field(
+        ..., description="Raw tokens / max(1, pred tokens). >1.0 indicates savings."
+    )
+    token_delta: int = Field(
+        ..., description="Raw tokens - pred tokens. Positive indicates reduction."
+    )
+
+
+class SliceTokenizerSummary(BaseModel):
+    """Aggregate tokenization metrics for a specific slice."""
+
+    slice_name: str
+    tokenizer_id: str
+    total_samples: int
+    total_raw_tokens: int
+    total_pred_tokens: int
+    total_gold_tokens: int
+    corpus_compression_ratio: float
+    net_savings_rate: float
+    mean_raw_sfi: float
+    mean_pred_sfi: float
+    delta_sfi: float
+    compression_count: int = Field(..., description="Samples where token_delta > 0")
+    inflation_count: int = Field(..., description="Samples where token_delta < 0")
+    neutral_count: int = Field(..., description="Samples where token_delta == 0")
+
+
+class SystemTokenizerSummary(BaseModel):
+    """Aggregate tokenization metrics for a preprocessor system across a tokenizer."""
+
+    system_id: str
+    tokenizer_id: str
+    total_raw_tokens: int
+    total_pred_tokens: int
+    corpus_compression_ratio: float
+    net_savings_rate: float
+    macro_compression_ratio: float
+    mean_raw_sfi: float
+    mean_pred_sfi: float
+    mean_delta_sfi: float
+    slice_breakdowns: dict[str, SliceTokenizerSummary]
+
+
+class TokenizerBenchmarkReport(BaseModel):
+    """Full cross-system, cross-tokenizer benchmark evaluation report."""
+
+    run_id: str
+    timestamp: str
+    provenance: RunProvenance
+    suite_name: str
+    systems: list[str]
+    tokenizers: list[str]
+    results: list[SystemTokenizerSummary]
+
