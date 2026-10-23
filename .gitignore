@@ -21,3 +21,4 @@ venv/
 
 # Benchmark execution outputs
 runs/
+artifacts/
