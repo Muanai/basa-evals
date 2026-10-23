@@ -6,7 +6,7 @@ from basa_evals.tokenizers.mock import MockTokenizerAdapter
 from basa_evals.tokenizers.runner import TokenizerRunner
 
 
-def test_tokenizer_reporters_render():
+def test_tokenizer_reporters_render() -> None:
     samples = [
         Sample(
             id="s1",

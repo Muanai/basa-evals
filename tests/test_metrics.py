@@ -11,7 +11,7 @@ from basa_evals.metrics.linguistic import (
 from basa_evals.metrics.preservation import check_entity_preservation
 
 
-def test_dual_em_metrics():
+def test_dual_em_metrics() -> None:
     assert exact_match_exact("Kafka", "Kafka") == 1.0
     assert exact_match_exact("Kafka", "kafka") == 0.0
     assert exact_match_casefold("Kafka", "kafka") == 1.0
@@ -19,14 +19,14 @@ def test_dual_em_metrics():
     assert exact_match_casefold("  Halo  ", "halo") == 1.0
 
 
-def test_cer_wer():
+def test_cer_wer() -> None:
     assert character_error_rate("halo", "halo") == 0.0
     assert word_error_rate("halo dunia", "halo dunia") == 0.0
     assert character_error_rate("hlo", "halo") == 0.25
     assert word_error_rate("halo semuanya dunia", "halo dunia") == 0.5
 
 
-def test_entity_preservation_subsequence():
+def test_entity_preservation_subsequence() -> None:
     entities = ["Kafka", "https://gojek.com/karir"]
     # Preserved within surrounding text
     pred_ok = "kami deploy ke kafka di https://gojek.com/karir sekarang"
@@ -41,7 +41,7 @@ def test_entity_preservation_subsequence():
     assert expected == 2
 
 
-def test_compute_corpus_metrics():
+def test_compute_corpus_metrics() -> None:
     samples = [
         Sample(
             id="s1",

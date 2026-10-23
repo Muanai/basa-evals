@@ -6,7 +6,7 @@ from pathlib import Path
 from basa_evals.core.schema import Sample
 
 
-def test_pilot_210_integrity():
+def test_pilot_210_integrity() -> None:
     repo_root = Path(__file__).parent.parent
     files = [
         repo_root / "data/gold/repetition_reduction_v1.jsonl",

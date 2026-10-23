@@ -5,7 +5,7 @@ from basa_evals.tokenizers.mock import MockTokenizerAdapter
 from basa_evals.tokenizers.registry import TokenizerRegistry
 
 
-def test_mock_tokenizer_contract_and_behavior():
+def test_mock_tokenizer_contract_and_behavior() -> None:
     tok = MockTokenizerAdapter()
     assert isinstance(tok, TokenizerAdapter)
     assert tok.tokenizer_id == "mock-subword"
@@ -30,11 +30,11 @@ def test_mock_tokenizer_contract_and_behavior():
     assert tok.count_tokens("   ") == 0
 
 
-def test_tiktoken_adapter_import_guard_or_execution():
+def test_tiktoken_adapter_import_guard_or_execution() -> None:
     from basa_evals.tokenizers.tiktoken_adapter import TiktokenAdapter
 
     try:
-        import tiktoken  # noqa: F401
+        import tiktoken  # type: ignore[import-not-found]  # noqa: F401
 
         has_tiktoken = True
     except ImportError:
@@ -54,11 +54,11 @@ def test_tiktoken_adapter_import_guard_or_execution():
         assert "pip install" in str(exc_info.value) or "tokenizers" in str(exc_info.value)
 
 
-def test_hf_adapter_import_guard_or_execution():
+def test_hf_adapter_import_guard_or_execution() -> None:
     from basa_evals.tokenizers.hf_adapter import HuggingFaceTokenizerAdapter
 
     try:
-        import transformers  # noqa: F401
+        import transformers  # type: ignore[import-not-found]  # noqa: F401
 
         has_transformers = True
     except ImportError:
@@ -72,7 +72,7 @@ def test_hf_adapter_import_guard_or_execution():
         assert "pip install" in str(exc_info.value) or "tokenizers" in str(exc_info.value)
 
 
-def test_register_default_tokenizers():
+def test_register_default_tokenizers() -> None:
     registry = TokenizerRegistry()
     registry.register_defaults()
     available = registry.list_available()

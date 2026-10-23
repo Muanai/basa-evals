@@ -9,7 +9,7 @@ from basa_evals.tokenizers.base import TokenizerAdapter
 from basa_evals.tokenizers.registry import TokenizerRegistry
 
 
-def test_tokenizer_protocol_and_models():
+def test_tokenizer_protocol_and_models() -> None:
     sample_res = SampleTokenizerResult(
         sample_id="test-1",
         slice_name="repetition_reduction",
@@ -77,7 +77,7 @@ def test_tokenizer_protocol_and_models():
     assert report.suite_name == "test_suite"
 
 
-def test_tokenizer_registry():
+def test_tokenizer_registry() -> None:
     class DummyTokenizer:
         tokenizer_id = "test-dummy"
         family = "bpe"

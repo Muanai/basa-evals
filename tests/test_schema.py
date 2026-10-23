@@ -12,7 +12,7 @@ from basa_evals.core.schema import (
 )
 
 
-def test_sample_negative_control_invariant():
+def test_sample_negative_control_invariant() -> None:
     # Valid negative control
     s = Sample(
         id="gold-neg-0001",
@@ -51,7 +51,7 @@ def test_sample_negative_control_invariant():
         )
 
 
-def test_sample_applied_ops_agreement():
+def test_sample_applied_ops_agreement() -> None:
     # Single-phenomenon slice must have exactly 1 matching op
     s = Sample(
         id="gold-slang-0001",
@@ -89,7 +89,7 @@ def test_sample_applied_ops_agreement():
         )
 
 
-def test_protected_entities_must_be_present():
+def test_protected_entities_must_be_present() -> None:
     with pytest.raises(ValidationError, match="not present in raw_input"):
         Sample(
             id="gold-neg-0004",
@@ -103,13 +103,13 @@ def test_protected_entities_must_be_present():
         )
 
 
-def test_gate_criteria_scale_rule():
+def test_gate_criteria_scale_rule() -> None:
     gate = GateCriteria(oner_max_rate=0.005, oner_zero_tolerance_below=500)
     assert gate.oner_zero_tolerance_below == 500
     assert gate.oner_max_rate == 0.005
 
 
-def test_run_config_valid():
+def test_run_config_valid() -> None:
     cfg = RunConfig(
         name="pilot_210",
         dataset_version="v1.0.0",

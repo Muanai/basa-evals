@@ -19,7 +19,7 @@ class DummyTokenizer:
         return len(self.tokenize(text))
 
 
-def test_sfi_computation():
+def test_sfi_computation() -> None:
     # 4 subword tokens across 2 words = 2.0 SFI
     assert compute_sfi("halo dunia", 4) == 2.0
     # Single word with 3 subwords = 3.0 SFI
@@ -29,7 +29,7 @@ def test_sfi_computation():
     assert compute_sfi("   ", 0) == 0.0
 
 
-def test_sample_token_stats():
+def test_sample_token_stats() -> None:
     tok = DummyTokenizer()
     stats = compute_sample_token_stats(
         sample_id="s1",
@@ -49,7 +49,7 @@ def test_sample_token_stats():
     assert stats.pred_sfi == 1.0
 
 
-def test_aggregate_tokenizer_slice():
+def test_aggregate_tokenizer_slice() -> None:
     # Sample 1: compression winner (raw=4, pred=2 -> delta=2)
     s1 = SampleTokenizerResult(
         sample_id="s1",
@@ -108,7 +108,7 @@ def test_aggregate_tokenizer_slice():
     assert round(summary.delta_sfi, 4) == round((4 / 3) - 1.5, 4)
 
 
-def test_aggregate_tokenizer_system():
+def test_aggregate_tokenizer_system() -> None:
     s1 = SampleTokenizerResult(
         sample_id="s1",
         slice_name="slice_a",

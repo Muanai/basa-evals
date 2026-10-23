@@ -7,26 +7,26 @@ from basa_evals.cli import app
 runner = CliRunner()
 
 
-def test_cli_list_suites():
+def test_cli_list_suites() -> None:
     res = runner.invoke(app, ["list-suites"])
     assert res.exit_code == 0
     assert "pilot_210" in res.stdout
 
 
-def test_cli_list_systems():
+def test_cli_list_systems() -> None:
     res = runner.invoke(app, ["list-systems"])
     assert res.exit_code == 0
     assert "raw" in res.stdout
     assert "simple_regex" in res.stdout
 
 
-def test_cli_validate_dataset():
+def test_cli_validate_dataset() -> None:
     res = runner.invoke(app, ["validate-dataset"])
     assert res.exit_code == 0
     assert "valid" in res.stdout.lower()
 
 
-def test_cli_run_no_gate():
+def test_cli_run_no_gate() -> None:
     res = runner.invoke(
         app, ["run", "--suite", "pilot_210", "--system", "raw-identity", "--no-gate"]
     )

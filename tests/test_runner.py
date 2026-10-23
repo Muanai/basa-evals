@@ -6,7 +6,7 @@ from basa_evals.core.loader import load_suite
 from basa_evals.core.runner import EvaluationRunner
 
 
-def test_runner_executes_suite_mock():
+def test_runner_executes_suite_mock() -> None:
     repo_root = Path(__file__).parent.parent
     suite_cfg, _ = load_suite(repo_root / "configs/suites/pilot_210.yaml")
     # Restrict to raw-identity for fast unit test

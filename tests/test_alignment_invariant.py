@@ -7,7 +7,7 @@ from basa_evals.core.alignment import align_reference, project_hypothesis
 from basa_evals.core.tokenizer import is_oner_eligible, tokenize
 
 
-def test_closed_form_insertion_counters():
+def test_closed_form_insertion_counters() -> None:
     raw = tokenize("Aplikasi Kafka berjalan")
     gold = tokenize("Aplikasi Kafka berjalan")
     pred = tokenize("Aplikasi Kafka yang berjalan")
@@ -24,7 +24,7 @@ def test_closed_form_insertion_counters():
     assert res.preserved_clean + res.on_substitution_or_deletion == res.clean_tokens
 
 
-def test_boundary_conditions():
+def test_boundary_conditions() -> None:
     raw = tokenize("gw bgt")
     gold = tokenize("saya sangat")
     ref_spans = align_reference(raw, gold)
@@ -58,7 +58,7 @@ def test_boundary_conditions():
         max_size=40,
     ),
 )
-def test_hypothesis_conservation_laws(r: str, g: str, p: str):
+def test_hypothesis_conservation_laws(r: str, g: str, p: str) -> None:
     raw = tokenize(r)
     gold = tokenize(g)
     pred = tokenize(p)

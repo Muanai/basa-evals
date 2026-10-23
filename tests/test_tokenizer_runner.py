@@ -5,7 +5,7 @@ from basa_evals.tokenizers.mock import MockTokenizerAdapter
 from basa_evals.tokenizers.runner import TokenizerRunner
 
 
-def test_tokenizer_runner_conservation_law():
+def test_tokenizer_runner_conservation_law() -> None:
     samples = [
         Sample(
             id="s1",
@@ -59,7 +59,7 @@ def test_tokenizer_runner_conservation_law():
         assert slice_summary.neutral_count == slice_summary.total_samples
 
 
-def test_tokenizer_runner_multi_system():
+def test_tokenizer_runner_multi_system() -> None:
     samples = [
         Sample(
             id="s1",

@@ -7,14 +7,14 @@ from basa_evals.cli import app
 runner = CliRunner()
 
 
-def test_cli_list_tokenizers():
+def test_cli_list_tokenizers() -> None:
     result = runner.invoke(app, ["list-tokenizers"])
     assert result.exit_code == 0
     assert "mock-subword" in result.output
     assert "gpt-4o" in result.output
 
 
-def test_cli_tokenize_mock_run(tmp_path: Path):
+def test_cli_tokenize_mock_run(tmp_path: Path) -> None:
     result = runner.invoke(
         app,
         [

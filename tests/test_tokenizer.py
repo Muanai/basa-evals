@@ -6,7 +6,7 @@ from basa_evals.core.tokenizer import (
 )
 
 
-def test_tokenizer_atom_precedence():
+def test_tokenizer_atom_precedence() -> None:
     cases = [
         ("https://gojek.com/karir.", "https://gojek.com/karir", TokenKind.URL),
         (
@@ -39,7 +39,7 @@ def test_tokenizer_atom_precedence():
         )
 
 
-def test_tokenizer_totality_guarantee():
+def test_tokenizer_totality_guarantee() -> None:
     texts = [
         "Deploy ke node.js di https://gojek.com/karir untuk 3,14 café 🙂!",
         "Kunjungi www.tokopedia.com/promo, lalu email dev@tokopedia.com.",
@@ -52,7 +52,7 @@ def test_tokenizer_totality_guarantee():
         assert "".join(text.split()) == "".join(reconstructed.split())
 
 
-def test_oner_eligibility():
+def test_oner_eligibility() -> None:
     tokens = tokenize("deploy ke Kafka v2.0 di https://gojek.com/karir!")
     eligible = [t.text for t in tokens if is_oner_eligible(t)]
     assert eligible == ["deploy", "ke", "Kafka", "v2.0", "di", "https://gojek.com/karir"]
@@ -60,7 +60,7 @@ def test_oner_eligibility():
     assert ineligible == ["!"]
 
 
-def test_canonicalize():
+def test_canonicalize() -> None:
     assert canonicalize("Kata-Kata", casefold=True) == "katakata"
     assert canonicalize("kata2", casefold=True) == "katakata"
     assert canonicalize("1.000.000", casefold=True) == "1000000"

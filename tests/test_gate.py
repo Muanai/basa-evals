@@ -4,7 +4,7 @@ from basa_evals.core.gate import evaluate_slice_gate
 from basa_evals.core.schema import GateCriteria, MetricValue, SliceGate
 
 
-def test_gate_integer_zero_tolerance_under_500():
+def test_gate_integer_zero_tolerance_under_500() -> None:
     gate = GateCriteria(
         oner_max_rate=0.005,
         oner_zero_tolerance_below=500,
@@ -24,13 +24,13 @@ def test_gate_integer_zero_tolerance_under_500():
     assert oner_check.threshold == 0.0
 
 
-def test_exploratory_slice_excluded():
+def test_exploratory_slice_excluded() -> None:
     gate = GateCriteria()
     checks = evaluate_slice_gate(gate, "mixed_challenge", exploratory=True, metrics={})
     assert len(checks) == 0
 
 
-def test_gate_scale_rule_above_500():
+def test_gate_scale_rule_above_500() -> None:
     gate = GateCriteria(
         oner_max_rate=0.005,
         oner_zero_tolerance_below=500,
