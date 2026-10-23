@@ -1,12 +1,17 @@
-"""Subword tokenization metrics, compression ratios, and Fragmentation Index (SFI)."""
+from __future__ import annotations
 
 from collections import defaultdict
+from typing import TYPE_CHECKING
+
 from basa_evals.core.schema import (
     SampleTokenizerResult,
     SliceTokenizerSummary,
     SystemTokenizerSummary,
 )
-from basa_evals.tokenizers.base import TokenizerAdapter
+
+if TYPE_CHECKING:
+    from basa_evals.tokenizers.base import TokenizerAdapter
+
 
 
 def compute_sfi(text: str, token_count: int) -> float:
