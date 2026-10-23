@@ -1,0 +1,27 @@
+name: tokenizer_pilot
+description: "Multi-Tokenizer Efficiency Benchmark on the Pilot-210 dataset"
+tier: tokenization
+dataset_version: v1.0.0
+
+slices:
+  - {path: "challenge/negative_controls_kbbi_v1.jsonl",           slice_name: negative_controls_kbbi}
+  - {path: "challenge/negative_controls_code_switching_v1.jsonl", slice_name: negative_controls_code_switching}
+  - {path: "gold/repetition_reduction_v1.jsonl",                  slice_name: repetition_reduction}
+  - {path: "gold/slang_lexical_v1.jsonl",                         slice_name: slang_lexical}
+  - {path: "gold/abbreviation_phonetic_v1.jsonl",                 slice_name: abbreviation_phonetic}
+  - {path: "gold/typo_nonword_v1.jsonl",                          slice_name: typo_nonword}
+  - {path: "challenge/mixed_challenge_v1.jsonl",                  slice_name: mixed_challenge, exploratory: true}
+
+systems:
+  - {system_id: raw-identity,  adapter: raw}
+  - {system_id: simple-regex,  adapter: simple_regex}
+  - {system_id: sastrawi,      adapter: sastrawi}
+  - {system_id: basa-default,  adapter: basa, params: {lowercase: true, apply_slang: true, apply_typo: false}}
+  - {system_id: basa-full,     adapter: basa, params: {lowercase: true, apply_slang: true, apply_typo: true}}
+
+tokenizers:
+  - gpt-4o
+  - llama-3
+  - indobert
+  - gemma-2
+  - mock-subword
