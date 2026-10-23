@@ -1,6 +1,7 @@
 """Benchmark runner script for direct invocation."""
 
 import sys
+
 from basa_evals.core.loader import load_suite
 from basa_evals.core.runner import EvaluationRunner
 from basa_evals.reporters.console import print_evaluation_summary
