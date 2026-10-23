@@ -8,6 +8,12 @@ from basa_evals.metrics.linguistic import (
     word_error_rate,
 )
 from basa_evals.metrics.preservation import check_entity_preservation
+from basa_evals.metrics.tokenization import (
+    aggregate_tokenizer_slice,
+    aggregate_tokenizer_system,
+    compute_sample_token_stats,
+    compute_sfi,
+)
 
 __all__ = [
     "exact_match_exact",
@@ -16,4 +22,9 @@ __all__ = [
     "word_error_rate",
     "check_entity_preservation",
     "compute_corpus_metrics",
+    "compute_sfi",
+    "compute_sample_token_stats",
+    "aggregate_tokenizer_slice",
+    "aggregate_tokenizer_system",
 ]
+
