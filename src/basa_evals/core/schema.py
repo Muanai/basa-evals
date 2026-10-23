@@ -322,3 +322,60 @@ class TokenizerBenchmarkReport(BaseModel):
     systems: list[str]
     tokenizers: list[str]
     results: list[SystemTokenizerSummary]
+
+
+class ClassificationMetrics(BaseModel):
+    """Aggregate multi-class classification metrics."""
+
+    macro_f1: float
+    weighted_f1: float
+    accuracy: float
+    precision_macro: float
+    recall_macro: float
+    per_class_f1: dict[str, float]
+    confusion_matrix: dict[str, dict[str, int]]
+    sample_count: int
+
+
+class SampleClassificationResult(BaseModel):
+    """Per-sample classification outcome under normalization."""
+
+    sample_id: str
+    raw_text: str
+    pred_text: str
+    gold_label: str
+    raw_pred_label: str
+    norm_pred_label: str
+    outcome: Literal["win", "loss", "neutral"]
+
+
+class DownstreamTaskSummary(BaseModel):
+    """Summary of downstream task performance for a single SUT and classifier model."""
+
+    system_id: str
+    classifier_id: str
+    task: str
+    sample_count: int
+    raw_metrics: ClassificationMetrics
+    norm_metrics: ClassificationMetrics
+    delta_f1: float
+    delta_accuracy: float
+    wins: int
+    losses: int
+    neutrals: int
+    net_win_rate: float
+    sample_results: list[SampleClassificationResult] = Field(default_factory=list)
+
+
+class DownstreamBenchmarkReport(BaseModel):
+    """Full report of downstream task benchmark across evaluated systems."""
+
+    run_id: str
+    timestamp: str
+    provenance: RunProvenance
+    suite_name: str
+    task: str
+    classifier_id: str
+    systems: list[str]
+    results: list[DownstreamTaskSummary]
+
