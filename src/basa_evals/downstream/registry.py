@@ -34,6 +34,7 @@ class ClassifierRegistry:
             )
 
         self.register_factory("indobert-smsa", create_indobert_smsa)
+        self.register_factory("hf-smsa", create_indobert_smsa)
 
     def get(self, classifier_id: str) -> ClassifierAdapter:
         """Resolve a classifier by ID, instantiating via factory if necessary."""

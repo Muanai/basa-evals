@@ -389,6 +389,168 @@ def tokenize(
         with open(md_file, "w", encoding="utf-8") as f:
             f.write(MarkdownReporter.render_tokenizer_benchmark(report))
 
+@app.command("list-classifiers")
+def list_classifiers() -> None:
+    """List registered downstream task classifiers and their runtime availability."""
+    from basa_evals.downstream.registry import ClassifierRegistry
+
+    table = Table(title="Registered Downstream Classifiers", header_style="bold green")
+    table.add_column("Classifier ID", style="bold")
+    table.add_column("Task", justify="center")
+    table.add_column("Classes", justify="center")
+    table.add_column("Status", justify="left")
+
+    reg = ClassifierRegistry()
+    reg.register_defaults()
+
+    try:
+        import torch  # type: ignore[import-not-found]  # noqa: F401
+        import transformers  # noqa: F401
+
+        has_hf = True
+    except ImportError:
+        has_hf = False
+
+    for c_id in sorted(reg.list_available()):
+        if c_id == "mock-sentiment":
+            status = "[green]Ready (Built-in Heuristic)[/green]"
+            classes_str = "positive, neutral, negative"
+            task = "sentiment"
+        elif c_id in ("indobert-smsa", "hf-smsa"):
+            if has_hf:
+                status = "[green]Ready (IndoBERT SmSA Fine-Tuned)[/green]"
+            else:
+                status = (
+                    "[yellow]Requires `pip install basa-evals[downstream]` (transformers, torch)[/yellow]"
+                )
+            classes_str = "positive, neutral, negative"
+            task = "sentiment"
+        else:
+            status = "[green]Registered[/green]"
+            classes_str = "custom"
+            task = "custom"
+
+        table.add_row(c_id, task, classes_str, status)
+
+    console.print()
+    console.print(table)
+    console.print()
+
+
+@app.command(name="downstream")
+def downstream(
+    suite: str = typer.Option(
+        "downstream_smsa", "--suite", "-s", help="Suite name or path to suite YAML"
+    ),
+    systems: str | None = typer.Option(
+        None, "--systems", help="Comma-separated system IDs to evaluate"
+    ),
+    classifier: str | None = typer.Option(
+        None,
+        "--classifier",
+        "-c",
+        help="Classifier ID to evaluate against (default from suite or 'mock-sentiment')",
+    ),
+    task: str | None = typer.Option(
+        None, "--task", help="Downstream task type override"
+    ),
+    output_dir: Path | None = typer.Option(
+        None, "--output-dir", "-o", help="Directory to export JSON and Markdown reports"
+    ),
+) -> None:
+    """Evaluate text normalizers on downstream NLP task models (e.g. sentiment classification)."""
+    from basa_evals.adapters.base import BasePreprocessor
+    from basa_evals.adapters.identity import RawAdapter
+    from basa_evals.downstream.registry import ClassifierRegistry
+    from basa_evals.downstream.runner import DownstreamRunner
+    from basa_evals.reporters.console import ConsoleReporter
+    from basa_evals.reporters.markdown import MarkdownReporter
+
+    # 1. Load Suite and Samples
+    try:
+        suite_path = resolve_suite_path(suite)
+        suite_cfg, slices_data = load_suite(suite_path)
+    except Exception as e:
+        console.print(f"[bold red]Configuration/Loading Error:[/bold red] {e}")
+        raise typer.Exit(code=2) from e
+
+    all_samples: list[Sample] = [s for _, slice_samples in slices_data for s in slice_samples]
+    if not all_samples:
+        console.print("[bold red]Error:[/bold red] No samples loaded from suite.")
+        raise typer.Exit(code=2)
+
+    # 2. Resolve Systems Under Test
+    target_sys_ids = (
+        [s.strip() for s in systems.split(",")]
+        if systems
+        else [s.system_id for s in suite_cfg.systems]
+    )
+    sut_instances: list[BasePreprocessor] = []
+    for sys_id in target_sys_ids:
+        matching = [s for s in suite_cfg.systems if s.system_id == sys_id]
+        if matching:
+            cfg = matching[0]
+            inst = Registry.get(cfg.adapter, system_id=cfg.system_id, **cfg.params)
+            sut_instances.append(inst)
+        elif sys_id == "raw-identity":
+            sut_instances.append(RawAdapter())
+        else:
+            try:
+                inst = Registry.get(sys_id, system_id=sys_id)
+                sut_instances.append(inst)
+            except Exception as e:
+                console.print(f"[bold red]Error resolving system '{sys_id}':[/bold red] {e}")
+                raise typer.Exit(code=2) from e
+
+    # 3. Resolve Classifier
+    clf_registry = ClassifierRegistry()
+    clf_registry.register_defaults()
+
+    target_clf_id = (
+        classifier
+        or suite_cfg.default_classifier
+        or "mock-sentiment"
+    )
+
+    try:
+        clf_instance = clf_registry.get(target_clf_id)
+    except Exception as e:
+        console.print(f"[bold red]Error loading classifier '{target_clf_id}':[/bold red] {e}")
+        raise typer.Exit(code=2) from e
+
+    # 4. Run Benchmark
+    console.print(
+        f"[bold blue]Running Downstream Task Benchmark on {len(all_samples)} samples across "
+        f"{len(sut_instances)} systems using '{clf_instance.classifier_id}'...[/bold blue]"
+    )
+
+    try:
+        report = DownstreamRunner.run_benchmark(
+            samples=all_samples,
+            systems=sut_instances,
+            classifier=clf_instance,
+            suite_name=suite_cfg.name,
+            task=task or suite_cfg.task or clf_instance.task,
+        )
+    except Exception as e:
+        console.print(f"[bold red]Benchmark Execution Error:[/bold red] {e}")
+        raise typer.Exit(code=2) from e
+
+    # 5. Render Console Results
+    console_reporter = ConsoleReporter(console=console)
+    console_reporter.render_downstream_benchmark(report)
+
+    # 6. Save Reports if Output Dir Provided
+    if output_dir:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        json_file = output_dir / f"downstream_report_{report.run_id[:8]}.json"
+        with open(json_file, "w", encoding="utf-8") as f:
+            f.write(report.model_dump_json(indent=2))
+
+        md_file = output_dir / f"downstream_report_{report.run_id[:8]}.md"
+        with open(md_file, "w", encoding="utf-8") as f:
+            f.write(MarkdownReporter.render_downstream_benchmark(report))
+
         console.print(f"[dim]Reports written to {json_file} and {md_file}[/dim]")
 
 

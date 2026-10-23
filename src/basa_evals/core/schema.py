@@ -199,8 +199,8 @@ class RunConfig(BaseModel):
 
     name: str
     description: str = ""
-    tier: Literal["intrinsic"] = "intrinsic"
-    dataset_version: str
+    tier: Literal["intrinsic", "tokenization", "downstream"] = "intrinsic"
+    dataset_version: str = "v1.0.0"
     slices: list[SliceConfig]
     systems: list[SystemRunConfig]
     metrics: list[str] = Field(
@@ -215,6 +215,9 @@ class RunConfig(BaseModel):
         ]
     )
     gate: GateCriteria = Field(default_factory=GateCriteria)
+    task: str | None = None
+    default_classifier: str | None = None
+    tokenizers: list[str] = Field(default_factory=list)
 
 
 class DatasetProvenance(BaseModel):
