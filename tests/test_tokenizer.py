@@ -34,7 +34,10 @@ def test_tokenizer_atom_precedence():
         token_texts = [t.text for t in tokens]
         assert expected_match in token_texts, f"Expected {expected_match} in {token_texts}"
         t = next(tok for tok in tokens if tok.text == expected_match)
-        assert t.kind == expected_kind, f"Token {expected_match} had kind {t.kind}, expected {expected_kind}"
+        assert t.kind == expected_kind, (
+            f"Token {expected_match} had kind {t.kind}, expected {expected_kind}"
+        )
+
 
 def test_tokenizer_totality_guarantee():
     texts = [
@@ -48,12 +51,14 @@ def test_tokenizer_totality_guarantee():
         # All non-whitespace characters must be completely preserved in order
         assert "".join(text.split()) == "".join(reconstructed.split())
 
+
 def test_oner_eligibility():
     tokens = tokenize("deploy ke Kafka v2.0 di https://gojek.com/karir!")
     eligible = [t.text for t in tokens if is_oner_eligible(t)]
     assert eligible == ["deploy", "ke", "Kafka", "v2.0", "di", "https://gojek.com/karir"]
     ineligible = [t.text for t in tokens if not is_oner_eligible(t)]
     assert ineligible == ["!"]
+
 
 def test_canonicalize():
     assert canonicalize("Kata-Kata", casefold=True) == "katakata"

@@ -24,7 +24,7 @@ def levenshtein_distance(seq1: Sequence[Any], seq2: Sequence[Any]) -> int:
         for j in range(1, m + 1):
             cost = 0 if item1 == seq2[j - 1] else 1
             curr_row[j] = min(
-                prev_row[j] + 1,      # deletion
+                prev_row[j] + 1,  # deletion
                 curr_row[j - 1] + 1,  # insertion
                 prev_row[j - 1] + cost,  # substitution
             )

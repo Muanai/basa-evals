@@ -1,6 +1,7 @@
 """Registry for discovery and resolution of subword tokenizer adapters."""
 
-from typing import Callable
+from collections.abc import Callable
+
 from basa_evals.tokenizers.base import TokenizerAdapter
 
 
@@ -91,4 +92,3 @@ class TokenizerRegistry:
         self.register_factory("llama-3", _make_llama3)
         self.register_factory("indobert", _make_indobert)
         self.register_factory("gemma-2", _make_gemma2)
-

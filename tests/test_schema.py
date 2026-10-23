@@ -50,6 +50,7 @@ def test_sample_negative_control_invariant():
             applied_ops=["lexicon_lookup"],
         )
 
+
 def test_sample_applied_ops_agreement():
     # Single-phenomenon slice must have exactly 1 matching op
     s = Sample(
@@ -87,6 +88,7 @@ def test_sample_applied_ops_agreement():
             applied_ops=["lexicon_lookup"],
         )
 
+
 def test_protected_entities_must_be_present():
     with pytest.raises(ValidationError, match="not present in raw_input"):
         Sample(
@@ -100,10 +102,12 @@ def test_protected_entities_must_be_present():
             metadata=SampleMetadata(protected_entities=["Kafka"]),
         )
 
+
 def test_gate_criteria_scale_rule():
     gate = GateCriteria(oner_max_rate=0.005, oner_zero_tolerance_below=500)
     assert gate.oner_zero_tolerance_below == 500
     assert gate.oner_max_rate == 0.005
+
 
 def test_run_config_valid():
     cfg = RunConfig(

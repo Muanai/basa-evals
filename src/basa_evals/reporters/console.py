@@ -6,7 +6,6 @@ from rich.table import Table
 from basa_evals.core.schema import EvaluationReport, TokenizerBenchmarkReport
 
 
-
 def format_metric(val: float | None, as_pct: bool = True) -> str:
     """Format a metric float into a percentage or decimal string."""
     if val is None:
@@ -129,7 +128,7 @@ def print_tokenizer_benchmark(
     table.add_column("Macro CR", justify="right")
     table.add_column("Raw SFI", justify="right")
     table.add_column("Pred SFI", justify="right")
-    table.add_column("ΔSFI", justify="right")
+    table.add_column("Delta SFI", justify="right")
 
     for res in report.results:
         # Savings formatting
@@ -173,7 +172,8 @@ def print_tokenizer_benchmark(
     slice_table.add_column("Tokenizer", style="cyan")
     slice_table.add_column("Tokens (Pred / Raw)", justify="right")
     slice_table.add_column("Savings (%)", justify="right")
-    slice_table.add_column("ΔSFI", justify="right")
+    slice_table.add_column("Delta SFI", justify="right")
+
     slice_table.add_column("Wins / Losses / Neutral", justify="center")
 
     for res in report.results:
@@ -220,4 +220,3 @@ class ConsoleReporter:
     def render_tokenizer_benchmark(self, report: TokenizerBenchmarkReport) -> None:
         """Render multi-tokenizer benchmark report."""
         print_tokenizer_benchmark(report, self.console)
-

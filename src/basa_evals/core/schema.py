@@ -87,9 +87,7 @@ class Sample(BaseModel):
                 )
         elif self.slice.startswith("negative_controls"):
             if not self.negative_control:
-                raise ValueError(
-                    f"Slice '{self.slice}' must be marked negative_control=True."
-                )
+                raise ValueError(f"Slice '{self.slice}' must be marked negative_control=True.")
 
         # 3. Protected entities verification: must appear in raw_input
         raw_cf = self.raw_input.casefold()
@@ -324,4 +322,3 @@ class TokenizerBenchmarkReport(BaseModel):
     systems: list[str]
     tokenizers: list[str]
     results: list[SystemTokenizerSummary]
-

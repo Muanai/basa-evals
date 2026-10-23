@@ -18,8 +18,10 @@ class HuggingFaceTokenizerAdapter:
         self._family = family
 
         try:
-            from transformers import AutoTokenizer
+            from transformers import AutoTokenizer  # type: ignore[import-not-found]
         except ImportError as e:
+
+
             raise ImportError(
                 f"The 'transformers' library is required to use tokenizer '{tokenizer_id}'. "
                 f"Install it with: pip install basa-evals[tokenizers] (or pip install transformers)."

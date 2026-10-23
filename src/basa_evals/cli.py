@@ -24,11 +24,21 @@ console = Console()
 
 @app.command()
 def run(
-    suite: str = typer.Option("pilot_210", "--suite", "-s", help="Suite name or path to suite YAML"),
-    system: str | None = typer.Option(None, "--system", help="Filter execution to a specific system ID"),
-    output: Path | None = typer.Option(None, "--output", "-o", help="Path to write JSON run artifact"),
-    findings: Path | None = typer.Option(None, "--findings", help="Path to append corrupted token findings"),
-    no_gate: bool = typer.Option(False, "--no-gate", help="Run in advisory mode without failing gate exit code"),
+    suite: str = typer.Option(
+        "pilot_210", "--suite", "-s", help="Suite name or path to suite YAML"
+    ),
+    system: str | None = typer.Option(
+        None, "--system", help="Filter execution to a specific system ID"
+    ),
+    output: Path | None = typer.Option(
+        None, "--output", "-o", help="Path to write JSON run artifact"
+    ),
+    findings: Path | None = typer.Option(
+        None, "--findings", help="Path to append corrupted token findings"
+    ),
+    no_gate: bool = typer.Option(
+        False, "--no-gate", help="Run in advisory mode without failing gate exit code"
+    ),
 ) -> None:
     """Execute an evaluation suite and print leaderboard and gate verdict."""
     try:
@@ -41,7 +51,9 @@ def run(
     if system:
         matching = [s for s in suite_cfg.systems if s.system_id == system]
         if not matching:
-            console.print(f"[bold red]Error:[/bold red] System '{system}' not found in suite configuration.")
+            console.print(
+                f"[bold red]Error:[/bold red] System '{system}' not found in suite configuration."
+            )
             raise typer.Exit(code=2)
         suite_cfg.systems = matching
 
@@ -167,7 +179,9 @@ def validate_dataset(
             console.print(f"  ... and {len(errors) - 10} more.")
         raise typer.Exit(code=1)
     else:
-        console.print(f"[bold green]Dataset integrity verified: {total_samples} samples valid.[/bold green]")
+        console.print(
+            f"[bold green]Dataset integrity verified: {total_samples} samples valid.[/bold green]"
+        )
 
 
 @app.command()
@@ -205,18 +219,20 @@ def list_tokenizers() -> None:
     table.add_column("Status / Backend")
 
     try:
-        import tiktoken  # noqa: F401
+        import tiktoken  # type: ignore[import-not-found]  # noqa: F401
 
         has_tiktoken = True
     except ImportError:
         has_tiktoken = False
 
     try:
-        import transformers  # noqa: F401
+        import transformers  # type: ignore[import-not-found]  # noqa: F401
 
         has_transformers = True
     except ImportError:
         has_transformers = False
+
+
 
     for tok_id in registry.list_available():
         if tok_id == "mock-subword":
@@ -232,13 +248,17 @@ def list_tokenizers() -> None:
             if has_transformers:
                 status = "[green]Ready (IndoBERT WordPiece)[/green]"
             else:
-                status = "[yellow]Requires `pip install basa-evals[tokenizers]` (transformers)[/yellow]"
+                status = (
+                    "[yellow]Requires `pip install basa-evals[tokenizers]` (transformers)[/yellow]"
+                )
             family = "wordpiece"
         elif tok_id == "gemma-2":
             if has_transformers:
                 status = "[green]Ready (Gemma SentencePiece)[/green]"
             else:
-                status = "[yellow]Requires `pip install basa-evals[tokenizers]` (transformers)[/yellow]"
+                status = (
+                    "[yellow]Requires `pip install basa-evals[tokenizers]` (transformers)[/yellow]"
+                )
             family = "sentencepiece"
         else:
             status = "[green]Registered[/green]"
@@ -253,10 +273,17 @@ def list_tokenizers() -> None:
 
 @app.command(name="tokenize")
 def tokenize(
-    suite: str = typer.Option("pilot_210", "--suite", "-s", help="Suite name or path to suite YAML"),
-    systems: str | None = typer.Option(None, "--systems", help="Comma-separated system IDs to evaluate"),
+    suite: str = typer.Option(
+        "pilot_210", "--suite", "-s", help="Suite name or path to suite YAML"
+    ),
+    systems: str | None = typer.Option(
+        None, "--systems", help="Comma-separated system IDs to evaluate"
+    ),
     tokenizers: str | None = typer.Option(
-        None, "--tokenizers", "-t", help="Comma-separated tokenizer IDs (e.g. gpt-4o,llama-3,mock-subword)"
+        None,
+        "--tokenizers",
+        "-t",
+        help="Comma-separated tokenizer IDs (e.g. gpt-4o,llama-3,mock-subword)",
     ),
     output_dir: Path | None = typer.Option(
         None, "--output-dir", "-o", help="Directory to write JSON and Markdown benchmark reports"
@@ -283,10 +310,16 @@ def tokenize(
         raise typer.Exit(code=2)
 
     # 2. Resolve Systems Under Test
+    from basa_evals.adapters.base import BasePreprocessor
     from basa_evals.adapters.identity import RawAdapter
+    from basa_evals.tokenizers.base import TokenizerAdapter
 
-    target_sys_ids = [s.strip() for s in systems.split(",")] if systems else [s.system_id for s in suite_cfg.systems]
-    sut_instances = []
+    target_sys_ids = (
+        [s.strip() for s in systems.split(",")]
+        if systems
+        else [s.system_id for s in suite_cfg.systems]
+    )
+    sut_instances: list[BasePreprocessor] = []
     for sys_id in target_sys_ids:
         # Check if configured in suite
         matching = [s for s in suite_cfg.systems if s.system_id == sys_id]
@@ -304,7 +337,6 @@ def tokenize(
                 console.print(f"[bold red]Error resolving system '{sys_id}':[/bold red] {e}")
                 raise typer.Exit(code=2) from e
 
-
     # 3. Resolve Tokenizers
     tok_registry = TokenizerRegistry()
     tok_registry.register_defaults()
@@ -315,14 +347,15 @@ def tokenize(
         else [t for t in tok_registry.list_available() if t != "mock-subword"] or ["mock-subword"]
     )
 
-    tok_instances = []
+    tok_instances: list[TokenizerAdapter] = []
     for tok_id in target_tok_ids:
         try:
-            inst = tok_registry.get(tok_id)
-            tok_instances.append(inst)
+            tok_inst = tok_registry.get(tok_id)
+            tok_instances.append(tok_inst)
         except Exception as e:
             console.print(f"[bold red]Error loading tokenizer '{tok_id}':[/bold red] {e}")
             raise typer.Exit(code=2) from e
+
 
     # 4. Run Benchmark
     console.print(
@@ -357,7 +390,6 @@ def tokenize(
             f.write(MarkdownReporter.render_tokenizer_benchmark(report))
 
         console.print(f"[dim]Reports written to {json_file} and {md_file}[/dim]")
-
 
 
 def main() -> None:

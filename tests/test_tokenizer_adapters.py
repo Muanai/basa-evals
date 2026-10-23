@@ -1,4 +1,5 @@
 import pytest
+
 from basa_evals.tokenizers.base import TokenizerAdapter
 from basa_evals.tokenizers.mock import MockTokenizerAdapter
 from basa_evals.tokenizers.registry import TokenizerRegistry
@@ -65,7 +66,9 @@ def test_hf_adapter_import_guard_or_execution():
 
     if not has_transformers:
         with pytest.raises(ImportError) as exc_info:
-            HuggingFaceTokenizerAdapter("indobert", pretrained_model_name="indobenchmark/indobert-base-p1")
+            HuggingFaceTokenizerAdapter(
+                "indobert", pretrained_model_name="indobenchmark/indobert-base-p1"
+            )
         assert "pip install" in str(exc_info.value) or "tokenizers" in str(exc_info.value)
 
 

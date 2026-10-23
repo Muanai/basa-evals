@@ -11,8 +11,8 @@ def test_tokenizer_reporters_render():
         Sample(
             id="s1",
             dataset_version="0.1.0",
-            tier="intrinsic",
             slice="repetition_reduction",
+
             domain="test",
             raw_input="iyaaaa halo",
             expected_output="iya halo",

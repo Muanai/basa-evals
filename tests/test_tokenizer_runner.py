@@ -10,7 +10,6 @@ def test_tokenizer_runner_conservation_law():
         Sample(
             id="s1",
             dataset_version="0.1.0",
-            tier="intrinsic",
             slice="repetition_reduction",
             domain="test",
             raw_input="iyaaaa halo",
@@ -21,14 +20,12 @@ def test_tokenizer_runner_conservation_law():
         Sample(
             id="s2",
             dataset_version="0.1.0",
-            tier="intrinsic",
             slice="negative_controls_kbbi",
             domain="test",
             raw_input="Aplikasi ini berjalan cepat.",
             expected_output="Aplikasi ini berjalan cepat.",
             negative_control=True,
         ),
-
     ]
 
     tok = MockTokenizerAdapter()
@@ -67,7 +64,6 @@ def test_tokenizer_runner_multi_system():
         Sample(
             id="s1",
             dataset_version="0.1.0",
-            tier="intrinsic",
             slice="repetition_reduction",
             domain="test",
             raw_input="iyaaaa halo",

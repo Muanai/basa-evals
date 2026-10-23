@@ -86,11 +86,7 @@ def evaluate_slice_gate(
         else:
             obs = uner_metric.score
             passed = obs <= thresh
-            reason = (
-                None
-                if passed
-                else f"UNER rate ({obs:.4f}) exceeded max rate ({thresh:.4f})"
-            )
+            reason = None if passed else f"UNER rate ({obs:.4f}) exceeded max rate ({thresh:.4f})"
             checks.append(
                 GateCheck(
                     slice_name=slice_name,

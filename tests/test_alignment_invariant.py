@@ -23,6 +23,7 @@ def test_closed_form_insertion_counters():
     # Conservation law L1 must hold exactly
     assert res.preserved_clean + res.on_substitution_or_deletion == res.clean_tokens
 
+
 def test_boundary_conditions():
     raw = tokenize("gw bgt")
     gold = tokenize("saya sangat")
@@ -38,11 +39,24 @@ def test_boundary_conditions():
     assert res_raw.on_errors == 0
     assert res_raw.un_errors == res_raw.noisy_tokens
 
+
 @settings(max_examples=100, deadline=timedelta(milliseconds=500))
 @given(
-    st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")), min_size=1, max_size=40),
-    st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")), min_size=1, max_size=40),
-    st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")), min_size=1, max_size=40),
+    st.text(
+        alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")),
+        min_size=1,
+        max_size=40,
+    ),
+    st.text(
+        alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")),
+        min_size=1,
+        max_size=40,
+    ),
+    st.text(
+        alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")),
+        min_size=1,
+        max_size=40,
+    ),
 )
 def test_hypothesis_conservation_laws(r: str, g: str, p: str):
     raw = tokenize(r)

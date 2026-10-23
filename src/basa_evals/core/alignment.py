@@ -59,8 +59,8 @@ def _wagner_fischer(
             else:
                 dp[i][j] = 1 + min(
                     dp[i - 1][j - 1],  # Substitute
-                    dp[i - 1][j],      # Delete
-                    dp[i][j - 1],      # Insert
+                    dp[i - 1][j],  # Delete
+                    dp[i][j - 1],  # Insert
                 )
 
     # Backtrack to reconstruct alignment operations
@@ -86,9 +86,7 @@ def _wagner_fischer(
     return ops
 
 
-def align_reference(
-    raw_tokens: list[Token], gold_tokens: list[Token]
-) -> list[ReferenceSpan]:
+def align_reference(raw_tokens: list[Token], gold_tokens: list[Token]) -> list[ReferenceSpan]:
     """Authoritatively partition raw tokens into CLEAN and NOISY reference spans."""
     raw_e = [t for t in raw_tokens if is_oner_eligible(t)]
     gold_e = [t for t in gold_tokens if is_oner_eligible(t)]
@@ -116,7 +114,9 @@ def align_reference(
             curr_raw.extend(t_raw)
             curr_gold.extend(t_gold)
         else:
-            spans.append(ReferenceSpan(kind=current_kind, raw_tokens=curr_raw, gold_tokens=curr_gold))
+            spans.append(
+                ReferenceSpan(kind=current_kind, raw_tokens=curr_raw, gold_tokens=curr_gold)
+            )
             current_kind = kind
             curr_raw = list(t_raw)
             curr_gold = list(t_gold)
@@ -192,7 +192,11 @@ def project_hypothesis(
             if len(non_ins_ops) >= 2:
                 # Count insertions that occur strictly between the first and last non-insertion operation
                 first_idx = next(i for i, (op, g, p) in enumerate(span_ops) if g is not None)
-                last_idx = len(span_ops) - 1 - next(i for i, (op, g, p) in enumerate(reversed(span_ops)) if g is not None)
+                last_idx = (
+                    len(span_ops)
+                    - 1
+                    - next(i for i, (op, g, p) in enumerate(reversed(span_ops)) if g is not None)
+                )
                 for k in range(first_idx + 1, last_idx):
                     op, g, p = span_ops[k]
                     if op == "I":

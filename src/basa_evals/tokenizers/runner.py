@@ -1,8 +1,8 @@
 """Tokenizer evaluation execution harness."""
 
-from datetime import datetime, timezone
 import platform
 import uuid
+from datetime import UTC, datetime
 
 from basa_evals.adapters.base import BasePreprocessor
 from basa_evals.core.provenance import get_git_commit
@@ -33,7 +33,7 @@ class TokenizerRunner:
     ) -> TokenizerBenchmarkReport:
         """Run benchmark across systems and tokenizers over the provided sample slice."""
         run_id = str(uuid.uuid4())
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
 
         provenance = RunProvenance(
             git_commit=get_git_commit(),

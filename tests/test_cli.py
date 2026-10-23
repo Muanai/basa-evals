@@ -27,6 +27,8 @@ def test_cli_validate_dataset():
 
 
 def test_cli_run_no_gate():
-    res = runner.invoke(app, ["run", "--suite", "pilot_210", "--system", "raw-identity", "--no-gate"])
+    res = runner.invoke(
+        app, ["run", "--suite", "pilot_210", "--system", "raw-identity", "--no-gate"]
+    )
     assert res.exit_code == 0
     assert "raw-identity" in res.stdout

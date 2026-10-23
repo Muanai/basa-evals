@@ -13,7 +13,6 @@ if TYPE_CHECKING:
     from basa_evals.tokenizers.base import TokenizerAdapter
 
 
-
 def compute_sfi(text: str, token_count: int) -> float:
     """Compute Subword Fragmentation Index (SFI) = tokens / whitespace words.
 

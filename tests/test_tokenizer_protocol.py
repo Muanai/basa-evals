@@ -1,12 +1,13 @@
 from basa_evals.core.schema import (
+    RunProvenance,
     SampleTokenizerResult,
     SliceTokenizerSummary,
     SystemTokenizerSummary,
     TokenizerBenchmarkReport,
-    RunProvenance,
 )
 from basa_evals.tokenizers.base import TokenizerAdapter
 from basa_evals.tokenizers.registry import TokenizerRegistry
+
 
 def test_tokenizer_protocol_and_models():
     sample_res = SampleTokenizerResult(
@@ -74,6 +75,7 @@ def test_tokenizer_protocol_and_models():
         results=[system_summary],
     )
     assert report.suite_name == "test_suite"
+
 
 def test_tokenizer_registry():
     class DummyTokenizer:

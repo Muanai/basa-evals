@@ -3,7 +3,6 @@
 from basa_evals.core.schema import EvaluationReport, TokenizerBenchmarkReport
 
 
-
 def format_val(val: float | None, as_pct: bool = True) -> str:
     if val is None:
         return "N/A"
@@ -41,13 +40,15 @@ def generate_markdown_report(report: EvaluationReport) -> str:
             f"{format_val(agg['entity_preservation'].score)} |"
         )
 
-    lines.extend([
-        "",
-        "## Gate Evaluation",
-        "",
-        "| Slice | Criterion | Threshold | Observed | Eligible Tokens | Status | Reason |",
-        "|---|:---:|---:|---:|---:|:---:|---|",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Gate Evaluation",
+            "",
+            "| Slice | Criterion | Threshold | Observed | Eligible Tokens | Status | Reason |",
+            "|---|:---:|---:|---:|---:|:---:|---|",
+        ]
+    )
 
     for check in report.gate.checks:
         status = "PASSED" if check.passed else "**FAILED**"
@@ -58,13 +59,15 @@ def generate_markdown_report(report: EvaluationReport) -> str:
             f"| `{check.slice_name}` | `{check.criterion}` | {thresh} | {obs} | {elig} | {status} | {check.reason or '-'} |"
         )
 
-    lines.extend([
-        "",
-        "## Provenance & Dataset Hashes",
-        "",
-        "| Slice | Path | Rows | SHA-256 |",
-        "|---|---|---:|---|",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Provenance & Dataset Hashes",
+            "",
+            "| Slice | Path | Rows | SHA-256 |",
+            "|---|---|---:|---|",
+        ]
+    )
 
     for ds in report.datasets:
         lines.append(f"| `{ds.slice_name}` | `{ds.path}` | {ds.rows} | `{ds.sha256[:16]}...` |")
@@ -104,13 +107,15 @@ def generate_markdown_tokenizer_report(report: TokenizerBenchmarkReport) -> str:
             f"{dsfi_sign}{res.mean_delta_sfi:.2f} |"
         )
 
-    lines.extend([
-        "",
-        "## Phenomenological Slice Breakdown (Savings vs. Inflation)",
-        "",
-        "| System | Slice | Tokenizer | Tokens (Pred / Raw) | Savings (%) | ΔSFI | Winners / Losers / Neutral |",
-        "|---|---|---|---:|---:|---:|:---:|",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Phenomenological Slice Breakdown (Savings vs. Inflation)",
+            "",
+            "| System | Slice | Tokenizer | Tokens (Pred / Raw) | Savings (%) | ΔSFI | Winners / Losers / Neutral |",
+            "|---|---|---|---:|---:|---:|:---:|",
+        ]
+    )
 
     for res in report.results:
         for slice_name, s_summary in sorted(res.slice_breakdowns.items()):
@@ -140,4 +145,3 @@ class MarkdownReporter:
     def render_tokenizer_benchmark(report: TokenizerBenchmarkReport) -> str:
         """Render multi-tokenizer benchmark report."""
         return generate_markdown_tokenizer_report(report)
-

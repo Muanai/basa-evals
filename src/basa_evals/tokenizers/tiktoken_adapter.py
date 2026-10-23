@@ -16,8 +16,10 @@ class TiktokenAdapter:
         self._encoding_name = encoding_name
 
         try:
-            import tiktoken
+            import tiktoken  # type: ignore[import-not-found]
         except ImportError as e:
+
+
             raise ImportError(
                 f"The 'tiktoken' library is required to use tokenizer '{tokenizer_id}'. "
                 f"Install it with: pip install basa-evals[tokenizers] (or pip install tiktoken)."

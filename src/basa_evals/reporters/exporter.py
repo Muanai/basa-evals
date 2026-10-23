@@ -41,7 +41,6 @@ def append_findings_log(
         "|---|---|---|---|---|---|---|",
     ]
 
-
     # Inspect results for target systems (especially basa-default, or all non-raw systems)
     for res in report.results:
         sys_id = res.system_id
@@ -50,9 +49,10 @@ def append_findings_log(
             oner_metric = slice_res.metrics.get("oner")
             em_metric = slice_res.metrics.get("exact_match")
 
-            has_error = (
-                (oner_metric and (oner_metric.numerator or 0) > 0)
-                or (em_metric and (em_metric.score or 0) < 1.0 and slice_name.startswith("negative_controls"))
+            has_error = (oner_metric and (oner_metric.numerator or 0) > 0) or (
+                em_metric
+                and (em_metric.score or 0) < 1.0
+                and slice_name.startswith("negative_controls")
             )
 
             if has_error:
