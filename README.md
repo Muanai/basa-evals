@@ -48,9 +48,9 @@ All corpus-level metrics are computed as ratio-of-sums over eligible tokens:
   - `EM_casefold`: Case-insensitive exact match after NFC normalization.
 - **Character Error Rate (CER):** $\sum \text{Lev}_{\text{chars}}(\text{pred}, \text{gold}) / \sum \max(1, \text{len}(\text{gold}))$.
 - **Word Error Rate (WER):** $\sum \text{Lev}_{\text{words}}(\text{pred}, \text{gold}) / \sum \max(1, |\text{gold word tokens}|)$.
-- **Over-Normalization Error Rate (ONER):** $\sum \text{on\_errors} / \sum \text{clean\_tokens}$.
-- **Under-Normalization Error Rate (UNER):** $\sum \text{un\_errors} / \sum \text{noisy\_tokens}$.
-- **Entity Preservation Rate:** $\sum \text{entities\_preserved} / \sum \text{entities\_expected}$.
+- **Over-Normalization Error Rate (ONER):** $\sum \text{ON Errors} / \sum \text{Clean Tokens}$.
+- **Under-Normalization Error Rate (UNER):** $\sum \text{UN Errors} / \sum \text{Noisy Tokens}$.
+- **Entity Preservation Rate:** $\sum \text{Entities Preserved} / \sum \text{Entities Expected}$.
 
 ---
 
