@@ -42,6 +42,10 @@ class Sample(BaseModel):
         default=False,
         description="True if expected_output must strictly equal raw_input",
     )
+    task: str | None = Field(default=None, description="Optional downstream task identifier")
+    gold_label: str | None = Field(
+        default=None, description="Optional target label for downstream evaluation"
+    )
     applied_ops: list[NormalizationOp] = Field(default_factory=list)
     metadata: SampleMetadata = Field(default_factory=SampleMetadata)
 
@@ -60,7 +64,7 @@ class Sample(BaseModel):
                     f"must be empty (found {self.applied_ops})."
                 )
         else:
-            if not self.applied_ops:
+            if not self.applied_ops and not self.slice.startswith("downstream"):
                 raise ValueError(
                     f"Sample '{self.id}' is marked negative_control=False but applied_ops "
                     f"cannot be empty."

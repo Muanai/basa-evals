@@ -42,3 +42,34 @@ def test_pilot_210_integrity() -> None:
     assert neg_count == 60
     assert neg_count / 180 >= 0.20  # Gated population >= 20%
     assert neg_count / 210 >= 0.20  # Total population >= 20%
+
+
+def test_smsa_test_slice_integrity() -> None:
+    repo_root = Path(__file__).parent.parent
+    p = repo_root / "data/downstream/smsa_test_v1.jsonl"
+    pkg_copy = repo_root / "src/basa_evals/data/downstream/smsa_test_v1.jsonl"
+
+    assert p.exists(), f"Missing dataset: {p}"
+    assert pkg_copy.exists(), f"Missing package copy: {pkg_copy}"
+    assert p.read_bytes() == pkg_copy.read_bytes(), "Drift between root and packaged slice"
+
+    with open(p, encoding="utf-8") as f:
+        lines = [line.strip() for line in f if line.strip()]
+
+    assert len(lines) == 150, f"Expected 150 rows, got {len(lines)}"
+
+    class_counts: dict[str, int] = {}
+    ids: set[str] = set()
+
+    for line in lines:
+        data = json.loads(line)
+        sample = Sample.model_validate(data)
+        assert sample.id not in ids, f"Duplicate id: {sample.id}"
+        ids.add(sample.id)
+        assert sample.gold_label is not None
+        class_counts[sample.gold_label] = class_counts.get(sample.gold_label, 0) + 1
+
+    assert class_counts.get("positive") == 50
+    assert class_counts.get("neutral") == 50
+    assert class_counts.get("negative") == 50
+
