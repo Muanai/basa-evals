@@ -3,7 +3,11 @@
 from rich.console import Console
 from rich.table import Table
 
-from basa_evals.core.schema import EvaluationReport, TokenizerBenchmarkReport
+from basa_evals.core.schema import (
+    DownstreamBenchmarkReport,
+    EvaluationReport,
+    TokenizerBenchmarkReport,
+)
 
 
 def format_metric(val: float | None, as_pct: bool = True) -> str:
@@ -207,6 +211,107 @@ def print_tokenizer_benchmark(
     console.print()
 
 
+def print_downstream_benchmark(
+    report: DownstreamBenchmarkReport,
+    console: Console | None = None,
+) -> None:
+    """Print downstream classification benchmark table and per-class breakdown."""
+    if console is None:
+        console = Console()
+
+    # 1. Main System x Classifier Leaderboard
+    table = Table(
+        title=f"Tier 3: Applied Downstream Benchmark ({report.suite_name} — Task: {report.task})",
+        header_style="bold magenta",
+        show_header=True,
+    )
+    table.add_column("System", style="bold", no_wrap=True)
+    table.add_column("Classifier", style="cyan")
+    table.add_column("Raw Acc", justify="right")
+    table.add_column("Norm Acc", justify="right")
+    table.add_column("ΔAcc", justify="right")
+    table.add_column("Raw F1", justify="right")
+    table.add_column("Norm F1", justify="right")
+    table.add_column("ΔF1", justify="right")
+    table.add_column("Wins / Losses / Neutral", justify="center")
+    table.add_column("Net Win Rate", justify="right")
+
+    all_classes: list[str] = []
+
+    for res in report.results:
+        # ΔAcc formatting
+        d_acc = res.delta_accuracy * 100
+        if d_acc > 0.05:
+            d_acc_str = f"[green]+{d_acc:.2f}%[/green]"
+        elif d_acc < -0.05:
+            d_acc_str = f"[red]{d_acc:.2f}%[/red]"
+        else:
+            d_acc_str = f"[dim]{d_acc:+.2f}%[/dim]"
+
+        # ΔF1 formatting
+        d_f1 = res.delta_f1 * 100
+        if d_f1 > 0.05:
+            d_f1_str = f"[green]+{d_f1:.2f}%[/green]"
+        elif d_f1 < -0.05:
+            d_f1_str = f"[red]{d_f1:.2f}%[/red]"
+        else:
+            d_f1_str = f"[dim]{d_f1:+.2f}%[/dim]"
+
+        # Ratio formatting
+        ratio_str = f"[green]{res.wins}W[/green] / [red]{res.losses}L[/red] / [dim]{res.neutrals}N[/dim]"
+
+        # Net win rate
+        nwr = res.net_win_rate * 100
+        if nwr > 0.05:
+            nwr_str = f"[green]+{nwr:.1f}%[/green]"
+        elif nwr < -0.05:
+            nwr_str = f"[red]{nwr:.1f}%[/red]"
+        else:
+            nwr_str = f"[dim]{nwr:.1f}%[/dim]"
+
+        table.add_row(
+            res.system_id,
+            res.classifier_id,
+            f"{res.raw_metrics.accuracy * 100:.2f}%",
+            f"{res.norm_metrics.accuracy * 100:.2f}%",
+            d_acc_str,
+            f"{res.raw_metrics.macro_f1 * 100:.2f}%",
+            f"{res.norm_metrics.macro_f1 * 100:.2f}%",
+            d_f1_str,
+            ratio_str,
+            nwr_str,
+        )
+
+        for c in res.norm_metrics.per_class_f1:
+            if c not in all_classes:
+                all_classes.append(c)
+
+    console.print()
+    console.print(table)
+
+    # 2. Per-Class F1 Breakdown Table
+    if all_classes:
+        class_table = Table(
+            title="Per-Class Macro F1 Breakdown (Under Normalization)",
+            header_style="bold blue",
+        )
+        class_table.add_column("System", style="bold")
+        class_table.add_column("Classifier", style="cyan")
+        for c in sorted(all_classes):
+            class_table.add_column(f"{c.capitalize()} F1", justify="right")
+
+        for res in report.results:
+            row_items = [res.system_id, res.classifier_id]
+            for c in sorted(all_classes):
+                f1_val = res.norm_metrics.per_class_f1.get(c, 0.0)
+                row_items.append(f"{f1_val * 100:.2f}%")
+            class_table.add_row(*row_items)
+
+        console.print()
+        console.print(class_table)
+        console.print()
+
+
 class ConsoleReporter:
     """Rich console visualizer wrapper."""
 
@@ -220,3 +325,7 @@ class ConsoleReporter:
     def render_tokenizer_benchmark(self, report: TokenizerBenchmarkReport) -> None:
         """Render multi-tokenizer benchmark report."""
         print_tokenizer_benchmark(report, self.console)
+
+    def render_downstream_benchmark(self, report: DownstreamBenchmarkReport) -> None:
+        """Render downstream classification benchmark report."""
+        print_downstream_benchmark(report, self.console)

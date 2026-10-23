@@ -1,6 +1,10 @@
 """Markdown report generator with full provenance footers."""
 
-from basa_evals.core.schema import EvaluationReport, TokenizerBenchmarkReport
+from basa_evals.core.schema import (
+    DownstreamBenchmarkReport,
+    EvaluationReport,
+    TokenizerBenchmarkReport,
+)
 
 
 def format_val(val: float | None, as_pct: bool = True) -> str:
@@ -133,6 +137,73 @@ def generate_markdown_tokenizer_report(report: TokenizerBenchmarkReport) -> str:
     return "\n".join(lines)
 
 
+def generate_markdown_downstream_report(report: DownstreamBenchmarkReport) -> str:
+    """Generate Markdown representation of a DownstreamBenchmarkReport."""
+    lines: list[str] = [
+        f"# Downstream Task Benchmark Report: {report.suite_name}",
+        "",
+        f"- **Run ID:** `{report.run_id}`",
+        f"- **Timestamp:** `{report.timestamp}`",
+        f"- **Task:** `{report.task}`",
+        f"- **Classifier:** `{report.classifier_id}`",
+        f"- **Python Version:** `{report.provenance.python_version}`",
+        f"- **Platform:** `{report.provenance.platform_system} ({report.provenance.platform_machine})`",
+        f"- **Git Commit:** `{report.provenance.git_commit or 'unknown'}`",
+        "",
+        "## Performance Summary",
+        "",
+        "| System | Classifier | Raw Acc | Norm Acc | ΔAcc | Raw F1 | Norm F1 | ΔF1 | Wins / Losses / Neutral | Net Win Rate |",
+        "|---|---|---:|---:|---:|---:|---:|---:|:---:|---:|",
+    ]
+
+    all_classes: list[str] = []
+
+    for res in report.results:
+        d_acc = res.delta_accuracy * 100
+        d_f1 = res.delta_f1 * 100
+        nwr = res.net_win_rate * 100
+
+        lines.append(
+            f"| `{res.system_id}` | `{res.classifier_id}` | "
+            f"{res.raw_metrics.accuracy * 100:.2f}% | "
+            f"{res.norm_metrics.accuracy * 100:.2f}% | "
+            f"{d_acc:+.2f}% | "
+            f"{res.raw_metrics.macro_f1 * 100:.2f}% | "
+            f"{res.norm_metrics.macro_f1 * 100:.2f}% | "
+            f"{d_f1:+.2f}% | "
+            f"{res.wins}W / {res.losses}L / {res.neutrals}N | "
+            f"{nwr:+.1f}% |"
+        )
+
+        for c in res.norm_metrics.per_class_f1:
+            if c not in all_classes:
+                all_classes.append(c)
+
+    if all_classes:
+        lines.extend(
+            [
+                "",
+                "## Per-Class Macro F1 Breakdown",
+                "",
+            ]
+        )
+        sorted_classes = sorted(all_classes)
+        header_cols = ["System", "Classifier"] + [f"{c.capitalize()} F1" for c in sorted_classes]
+        lines.append("| " + " | ".join(header_cols) + " |")
+        align_cols = ["---", "---"] + ["---:" for _ in sorted_classes]
+        lines.append("| " + " | ".join(align_cols) + " |")
+
+        for res in report.results:
+            row_items = [f"`{res.system_id}`", f"`{res.classifier_id}`"]
+            for c in sorted_classes:
+                val = res.norm_metrics.per_class_f1.get(c, 0.0)
+                row_items.append(f"{val * 100:.2f}%")
+            lines.append("| " + " | ".join(row_items) + " |")
+
+    lines.append("")
+    return "\n".join(lines)
+
+
 class MarkdownReporter:
     """Markdown report generator wrapper."""
 
@@ -145,3 +216,8 @@ class MarkdownReporter:
     def render_tokenizer_benchmark(report: TokenizerBenchmarkReport) -> str:
         """Render multi-tokenizer benchmark report."""
         return generate_markdown_tokenizer_report(report)
+
+    @staticmethod
+    def render_downstream_benchmark(report: DownstreamBenchmarkReport) -> str:
+        """Render downstream classification benchmark report."""
+        return generate_markdown_downstream_report(report)
