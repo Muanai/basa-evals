@@ -31,12 +31,17 @@ dependencies = [
 [project.optional-dependencies]
 basa = ["basa"]
 sastrawi = ["PySastrawi>=1.2.0"]
+tokenizers = [
+    "tiktoken>=0.7.0",
+    "transformers>=4.40.0",
+]
 dev = [
     "pytest>=8.0.0",
     "hypothesis>=6.100.0",
     "ruff>=0.4.0",
     "mypy>=1.10.0",
 ]
+
 
 [project.scripts]
 basa-eval = "basa_evals.cli:app"

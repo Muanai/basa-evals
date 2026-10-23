@@ -43,3 +43,52 @@ class TokenizerRegistry:
         """Clear all registered tokenizers."""
         self._tokenizers.clear()
         self._factories.clear()
+
+    def register_defaults(self) -> None:
+        """Register default offline and lazy-factory tokenizers."""
+        from basa_evals.tokenizers.mock import MockTokenizerAdapter
+
+        self.register(MockTokenizerAdapter())
+
+        def _make_gpt4o() -> TokenizerAdapter:
+            from basa_evals.tokenizers.tiktoken_adapter import TiktokenAdapter
+
+            return TiktokenAdapter("gpt-4o", encoding_name="o200k_base")
+
+        def _make_llama3() -> TokenizerAdapter:
+            try:
+                from basa_evals.tokenizers.hf_adapter import HuggingFaceTokenizerAdapter
+
+                return HuggingFaceTokenizerAdapter(
+                    "llama-3",
+                    pretrained_model_name="meta-llama/Meta-Llama-3-8B",
+                    family="bpe",
+                )
+            except Exception:
+                from basa_evals.tokenizers.tiktoken_adapter import TiktokenAdapter
+
+                return TiktokenAdapter("llama-3", encoding_name="cl100k_base")
+
+        def _make_indobert() -> TokenizerAdapter:
+            from basa_evals.tokenizers.hf_adapter import HuggingFaceTokenizerAdapter
+
+            return HuggingFaceTokenizerAdapter(
+                "indobert",
+                pretrained_model_name="indobenchmark/indobert-base-p1",
+                family="wordpiece",
+            )
+
+        def _make_gemma2() -> TokenizerAdapter:
+            from basa_evals.tokenizers.hf_adapter import HuggingFaceTokenizerAdapter
+
+            return HuggingFaceTokenizerAdapter(
+                "gemma-2",
+                pretrained_model_name="google/gemma-2-2b",
+                family="sentencepiece",
+            )
+
+        self.register_factory("gpt-4o", _make_gpt4o)
+        self.register_factory("llama-3", _make_llama3)
+        self.register_factory("indobert", _make_indobert)
+        self.register_factory("gemma-2", _make_gemma2)
+
