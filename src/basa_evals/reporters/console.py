@@ -221,7 +221,7 @@ def print_downstream_benchmark(
 
     # 1. Main System x Classifier Leaderboard
     table = Table(
-        title=f"Tier 3: Applied Downstream Benchmark ({report.suite_name} — Task: {report.task})",
+        title=f"Tier 3: Applied Downstream Benchmark ({report.suite_name} - Task: {report.task})",
         header_style="bold magenta",
         show_header=True,
     )
@@ -229,10 +229,10 @@ def print_downstream_benchmark(
     table.add_column("Classifier", style="cyan")
     table.add_column("Raw Acc", justify="right")
     table.add_column("Norm Acc", justify="right")
-    table.add_column("ΔAcc", justify="right")
+    table.add_column("Delta Acc", justify="right")
     table.add_column("Raw F1", justify="right")
     table.add_column("Norm F1", justify="right")
-    table.add_column("ΔF1", justify="right")
+    table.add_column("Delta F1", justify="right")
     table.add_column("Wins / Losses / Neutral", justify="center")
     table.add_column("Net Win Rate", justify="right")
 
