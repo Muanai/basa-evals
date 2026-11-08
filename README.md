@@ -6,24 +6,25 @@
 
 **BASA Evals** is an independent, neutral evaluation framework, benchmark suite, and dataset pipeline designed to systematically measure text normalization and preprocessing for Indonesian NLP (standard Indonesian, Bahasa Gaul slang, character repetition, non-word typos, and code-switching).
 
-It treats every normalizer — including BASA — as an external **System Under Test (SUT)** behind a uniform protocol (`BasePreprocessor`), and measures intrinsic normalization quality with auditable, mathematically verified metrics.
+It treats every normalizer — including BASA — as an external **System Under Test (SUT)** behind a uniform protocol (`BasePreprocessor`), and measures normalization quality across three rigorous evaluation tiers: **Intrinsic Linguistic Fidelity**, **Multi-Tokenizer Efficiency**, and **Applied Downstream Task Impact**.
 
 ---
 
 ## 1. Core Mission & Philosophy
 
-The framework answers one question without favour: **does a given normalizer improve informal Indonesian text without destroying clean text?**
+The framework answers one question without favour: **does a given normalizer improve informal Indonesian text without destroying clean text or hurting downstream models?**
 
 - **Preservation First:** Under-normalization (slang left untouched) costs tokenizer efficiency. Over-normalization (clean KBBI text, brand names, technical terms, and code-switched jargon mutated into something else) corrupts meaning silently upstream of LLM and RAG pipelines.
-- **Mandatory Negative Controls:** Every benchmark slice suite must contain at least **20% negative-control samples** (`raw_input == expected_output`).
+- **Mandatory Negative Controls:** Every intrinsic benchmark suite must contain at least **20% negative-control samples** (`raw_input == expected_output`).
 - **Strict Release Gatekeeper:** Candidate releases must achieve $\text{ONER} = 0$ (zero errors) on pilot slices ($N < 500$ clean tokens) and $\text{ONER} < 0.5\%$ on scaled benchmark suites.
-- **Independent SUT Architecture:** BASA and all competing baselines (`raw-identity`, `simple-regex`, `sastrawi`) compete symmetrically via the `BasePreprocessor` protocol.
+- **Three-Tier Evaluation:** Normalization is evaluated intrinsically (edit distance & preservation), structurally (subword tokenizer fragmentation), and operationally (classification accuracy and $F_1$ deltas).
 
 ---
 
-## 2. Benchmark Suites (Pilot-210)
+## 2. Three-Tier Benchmark Suites
 
-The Milestone 1 benchmark suite (`pilot_210`) contains **210 curated rows** across 7 slices:
+### Tier 1: Intrinsic Linguistic Precision (`pilot_210`)
+Measures exact transformation correctness and negative-control preservation across 210 curated rows:
 
 | Slice | Rows | Category | Target Phenomenon | Gate Criteria |
 |---|---:|---|---|---|
@@ -37,12 +38,20 @@ The Milestone 1 benchmark suite (`pilot_210`) contains **210 curated rows** acro
 
 Negative control ratio: **60 / 180 = 33.3%** of the gated population, **60 / 210 = 28.6%** of the total.
 
+### Tier 2: Multi-Tokenizer Efficiency (`tokenizer_pilot`)
+Measures whether normalization reduces prompt token counts and mitigates context fragmentation across leading foundation models:
+- **Evaluated Tokenizers:** OpenAI GPT-4o (`o200k_base`), Meta LLaMA-3 (BPE 128k), IndoBERT (WordPiece 32k), Gemma-2 (SentencePiece), and lightweight offline mock subword tokenizers.
+
+### Tier 3: Applied Downstream Tasks (`downstream_smsa`)
+Measures downstream task accuracy deltas on real-world Indonesian customer review sentiment:
+- **Corpus:** 150 balanced IndoNLU SmSA test samples (50 positive, 50 neutral, 50 negative).
+- **Classifiers:** Built-in offline `MockSentimentClassifier` (zero external dependencies) and fine-tuned `HuggingFaceSentimentClassifier` (`wirasana/indobert-sentiment-smsa`).
+
 ---
 
-## 3. Metrics
+## 3. Metrics Formulation
 
-All corpus-level metrics are computed as ratio-of-sums over eligible tokens:
-
+### Intrinsic Metrics (Tier 1)
 - **Exact Match (Dual Metric):**
   - `EM_exact`: String equality after NFC normalization and whitespace stripping.
   - `EM_casefold`: Case-insensitive exact match after NFC normalization.
@@ -52,24 +61,41 @@ All corpus-level metrics are computed as ratio-of-sums over eligible tokens:
 - **Under-Normalization Error Rate (UNER):** $\sum \text{UN Errors} / \sum \text{Noisy Tokens}$.
 - **Entity Preservation Rate:** $\sum \text{Entities Preserved} / \sum \text{Entities Expected}$.
 
+### Tokenizer Efficiency Metrics (Tier 2)
+- **Token Compression Ratio:** $\text{Raw Tokens} / \max(1, \text{Pred Tokens})$.
+- **Net Savings Rate:** $(\text{Raw Tokens} - \text{Pred Tokens}) / \text{Raw Tokens}$.
+- **Subword Fragmentation Index (SFI):** Average subwords per whitespace-delimited word ($\text{SFI} = T / W$). Lower SFI indicates reduced fragmentation.
+
+### Downstream Task Metrics (Tier 3)
+- **Accuracy & Macro $F_1$ Deltas:** $\Delta\text{Acc} = \text{Acc}_{\text{norm}} - \text{Acc}_{\text{raw}}$, $\Delta F_1 = F_{1,\text{norm}} - F_{1,\text{raw}}$.
+- **Sample Outcome Partitioning:** Every sample is partitioned into **Win**, **Loss**, or **Neutral** under normalization:
+  - $\text{Win}$: Raw incorrect, normalized correct.
+  - $\text{Loss}$: Raw correct, normalized incorrect.
+  - $\text{Neutral}$: Both correct or both incorrect.
+- **Net Win Rate:** $(\text{Wins} - \text{Losses}) / N_{\text{total}}$.
+- **Conservation Invariant:** $\text{Wins} + \text{Losses} + \text{Neutrals} = N_{\text{total}}$ holds strictly across all systems, with zero delta on `raw-identity`.
+
 ---
 
 ## 4. Quickstart & Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/Muanai/basa-evals.git
-cd basa-evals
+# Basic installation (pure Python, zero heavy dependencies)
+pip install basa-evals
 
-# Install in editable mode
-pip install -e .
+# With subword tokenizers (tiktoken, transformers)
+pip install "basa-evals[tokenizers]"
 
-# Install optional dependencies for BASA and Sastrawi adapters
-pip install -e ".[basa,sastrawi,dev]"
+# With downstream transformer classifiers (torch, transformers)
+pip install "basa-evals[downstream]"
+
+# Full installation including SUT baselines (basa, PySastrawi)
+pip install "basa-evals[basa,sastrawi,tokenizers,downstream,dev]"
 ```
 
 ### CLI Commands
 
+#### Tier 1: Intrinsic Linguistic Evaluation
 ```bash
 # Run the pilot suite across all registered systems
 basa-eval run --suite pilot_210
@@ -79,16 +105,36 @@ basa-eval run --suite pilot_210 --system basa-default
 
 # Run in advisory mode (record results without failing on gate exit code)
 basa-eval run --suite pilot_210 --no-gate
+```
 
-# List available suites and SUT adapters
+#### Tier 2: Multi-Tokenizer Efficiency Benchmark
+```bash
+# Run tokenizer benchmark across GPT-4o and LLaMA-3
+basa-eval tokenize --suite tokenizer_pilot --tokenizers gpt-4o,llama-3
+
+# Run with offline mock tokenizer (zero dependencies)
+basa-eval tokenize --suite tokenizer_pilot --tokenizers mock-subword
+```
+
+#### Tier 3: Applied Downstream Task Benchmark
+```bash
+# Run sentiment classification benchmark on IndoNLU SmSA test split
+basa-eval downstream --suite downstream_smsa --classifier mock-sentiment
+
+# Export JSON and Markdown benchmark reports
+basa-eval downstream --suite downstream_smsa --classifier mock-sentiment --output-dir reports/
+```
+
+#### Discovery & Inspection Utilities
+```bash
+# List available suites, systems, tokenizers, and classifiers
 basa-eval list-suites
 basa-eval list-systems
+basa-eval list-tokenizers
+basa-eval list-classifiers
 
 # Validate dataset integrity across all slices
 basa-eval validate-dataset
-
-# Inspect a generated JSON run artifact
-basa-eval inspect runs/<run_id>.json
 ```
 
 ---
@@ -97,12 +143,10 @@ basa-eval inspect runs/<run_id>.json
 
 | Limitation | Statement |
 |---|---|
-| **Single-phenomenon scope** | The six gated slices each require exactly one transformation. Composed multi-stage behaviour on mixed sentences is measured only by the ungated exploratory slice and is **not** claimed by any gate. |
-| **Case invariance** | ONER and entity preservation compare case-folded tokens. A SUT that flattens legitimate capitalization is invisible to the preservation gate; case fidelity is visible only through the `EM exact` diagnostic column. |
-| **Punctuation invariance** | Punctuation tokens are ineligible for ONER. Punctuation edits appear in CER/WER only and cannot fail the preservation gate. |
-| **No latency or throughput** | Milestone 1 is `tier: intrinsic` only. Latency, throughput, and downstream-task tiers are out of scope for M1. |
-| **No statistical inference** | Slice sizes are 30 rows. Differences below ~13 percentage points on a 30-row slice are indistinguishable from sampling noise. All M1 leaderboards are directional. |
-| **Coverage of non-Latin scripts** | A whole non-Latin run (e.g. CJK) becomes one `WORD` token. Emoji and symbols become `MISC` tokens, counted but not analysed. |
+| **Single-phenomenon scope** | In Tier 1, the six gated slices each target one isolated phenomenon. Multi-phenomenon interactions are measured in the exploratory `mixed_challenge` slice. |
+| **Case invariance** | ONER and entity preservation compare case-folded tokens. Legitimate capitalization changes are monitored via the `EM exact` diagnostic column. |
+| **Punctuation invariance** | Punctuation tokens are ineligible for ONER. Punctuation edits appear in CER/WER only and do not fail the preservation gate. |
+| **Statistical inference** | Benchmark slices in the pilot are curated at 30 rows per phenomenon (150 rows in SmSA). Differences below ~10 percentage points on small slices should be interpreted directionally. |
 
 ---
 

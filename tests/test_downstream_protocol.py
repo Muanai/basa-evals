@@ -59,7 +59,7 @@ def test_downstream_schema_contracts() -> None:
         timestamp="2026-10-23T12:00:00Z",
         provenance=RunProvenance(
             git_commit="abc",
-            basa_evals_version="0.1.0a0",
+            basa_evals_version="0.1.0",
             python_version="3.12.6",
             platform_system="Windows",
             platform_machine="AMD64",

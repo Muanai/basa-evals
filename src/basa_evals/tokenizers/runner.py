@@ -37,7 +37,7 @@ class TokenizerRunner:
 
         provenance = RunProvenance(
             git_commit=get_git_commit(),
-            basa_evals_version="0.1.0a0",
+            basa_evals_version="0.1.0",
             python_version=platform.python_version(),
             platform_system=platform.system(),
             platform_machine=platform.machine(),

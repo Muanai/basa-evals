@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "basa-evals"
-version = "0.1.0a0"
+version = "0.1.0"
 description = "Independent evaluation framework, benchmark suite, and dataset pipeline for Indonesian NLP text normalization and preprocessing."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -34,6 +34,10 @@ sastrawi = ["PySastrawi>=1.2.0"]
 tokenizers = [
     "tiktoken>=0.7.0",
     "transformers>=4.40.0",
+]
+downstream = [
+    "transformers>=4.40.0",
+    "torch>=2.0.0",
 ]
 dev = [
     "pytest>=8.0.0",

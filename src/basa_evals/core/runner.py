@@ -176,7 +176,7 @@ class EvaluationRunner:
             run_id=str(uuid.uuid4()),
             timestamp=datetime.now(UTC).isoformat(),
             run_name=self.run_config.name,
-            evals_version="0.1.0a0",
+            evals_version="0.1.0",
             python_version=platform.python_version(),
             git_commit=get_git_commit(),
             dataset_version=self.run_config.dataset_version,

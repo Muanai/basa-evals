@@ -259,7 +259,7 @@ class RunProvenance(BaseModel):
     """Runtime and environmental provenance details."""
 
     git_commit: str | None = None
-    basa_evals_version: str = "0.1.0a0"
+    basa_evals_version: str = "0.1.0"
     python_version: str
     platform_system: str
     platform_machine: str
