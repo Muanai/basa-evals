@@ -36,6 +36,13 @@ class BasaAdapter:
                     f"Supported parameters are: {sorted(valid_params)}"
                 )
 
+        if (
+            self._params.get("apply_typo")
+            and not self._basa.typo.vocab
+            and hasattr(self._basa.typo, "load_default_vocab")
+        ):
+            self._basa.typo.load_default_vocab()
+
     @property
     def system_id(self) -> str:
         return self._system_id
