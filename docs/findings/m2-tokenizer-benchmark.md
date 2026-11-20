@@ -18,7 +18,7 @@ Milestone 2 evaluates whether Indonesian text normalization actually yields subw
 3. **The Expansion vs. Contraction Trade-Off Revealed:**
    - **Repetition Collapse is the Dominant Savings Engine:** Collapsing elongated runs (`repetition_reduction`) produces massive compression: **$+35.6\%$ on GPT-4o** and **$+37.1\%$ on LLaMA-3** ($\Delta \text{SFI} > +1.0$, 29 wins, 0 losses).
    - **Slang Dictionary Expansion Causes Net Inflation:** On `slang_lexical`, expanding compact informal slang into formal multi-word expressions results in net token expansion (**$-3.7\%$ inflation on LLaMA-3**, with 11 expansion losses vs. 8 compression wins).
-4. **Sastrawi's Pyrrhic Compression:** While `sastrawi` achieves $+16.4\%$ token reduction, it does so by aggressive morphological destruction (as proven in Milestone 1 where ONER was $17.1\%$), rendering text unnatural for LLM prompting.
+4. **Sastrawi's Pyrrhic Compression:** While `sastrawi` achieves $+16.4\%$ token reduction, it does so by aggressive morphological destruction (as proven in Milestone 1 where ONER was $33.4\%$), rendering text unnatural for LLM prompting.
 
 ---
 

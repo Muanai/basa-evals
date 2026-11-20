@@ -80,5 +80,5 @@ Milestone 3 answers the central operational question of NLP preprocessing: **Doe
 
 ## 5. Architectural Recommendations for Pipeline Deployments
 
-1. **Never use aggressive stemmers (e.g. Sastrawi) upstream of semantic models:** As verified across Milestones 1, 2, and 3, stemming strips critical semantic morphology and causes both Over-Normalization Error ($17.1\%$) and downstream classification degradation ($-2.00\%$).
+1. **Never use aggressive stemmers (e.g. Sastrawi) upstream of semantic models:** As verified across Milestones 1, 2, and 3, stemming strips critical semantic morphology and causes both Over-Normalization Error ($33.4\%$) and downstream classification degradation ($-2.00\%$).
 2. **Adopt BASA fast/balanced for customer review processing:** Normalizing conversational Indonesian text provides a direct $+4.67\%$ boost in classification accuracy with zero external dependencies and single-digit millisecond latency.

@@ -93,7 +93,7 @@ Standard-word text with elongated runs. Exactly one collapse produces gold.
 
 A single dictionary hop from a colloquial form to a standard form.
 
-- Valid: `mager → malas gerak`, `gabut → tidak ada pekerjaan`, `bohay → bodoh`.
+- Valid: `mager → malas gerak`, `gabut → gaji buta`, `bohay → bodoh`.
 - The gold must be the accepted expansion, not an explanation. Two words are fine; a clause is
   a gloss and is banned.
 - Multi-word slang where the expansion is idiomatic (`mager`) is allowed; the test is that a
