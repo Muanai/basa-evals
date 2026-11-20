@@ -17,6 +17,7 @@ systems:
   - {system_id: simple-regex,  adapter: simple_regex}
   - {system_id: sastrawi,      adapter: sastrawi}
   - {system_id: basa-default,  adapter: basa, params: {lowercase: true, apply_slang: true, apply_typo: false}}
+  - {system_id: basa-concise,  adapter: basa, params: {lowercase: true, apply_slang: true, apply_typo: false, mode: "concise"}}
   - {system_id: basa-full,     adapter: basa, params: {lowercase: true, apply_slang: true, apply_typo: true}}
 
 tokenizers:
